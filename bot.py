@@ -19,6 +19,11 @@ async def cmd_start(message: types.Message):
                          f"Я - {me.first_name} для определения выгодности покупки или продажи той"
                          f" или иной акции, с указанными параметрами!")
 
+@dp.message(Command("help"))
+async def cmd_start(message: types.Message):
+    me = await bot.get_me()
+    await message.answer(f"В мои возможности входит:\n"
+                         f"Проанализировать акции при вводе вручную.")
 
 # Запуск процесса поллинга новых апдейтов
 async def start_bot():
