@@ -37,11 +37,22 @@ async def cmd_start(message: types.Message):
 
 
 @dp.callback_query(lambda c: c.data == "help")
-async def send_random_value(callback: types.CallbackQuery):
-    await callback.message.answer('Торговый бот - это бот, позволяющий'
-                                  ' работать с данными о рынках, которые укажите для анализа с параметрами.'
-                                  ' Благодаря чему бот примет решение по вашему вопросу и выдаст максимально выгодное'
-                                  ' предложение с использованием искусственного интеллекта 🤖.')
+async def answer_starting(callback: types.CallbackQuery):
+    builder = InlineKeyboardBuilder()
+    builder.add(types.InlineKeyboardButton(
+        text="Вернуться в главное меню‍",
+        callback_data="back_main_menu")
+    )
+    await callback.message.edit_text('Торговый бот - это бот, позволяющий'
+                                     ' работать с данными о рынках, которые укажите для анализа с параметрами.'
+                                     ' Благодаря чему бот примет решение по вашему вопросу и выдаст максимально '
+                                     'выгодное предложение с использованием искусственного интеллекта 🤖.',
+                                     reply_markup=builder.as_markup())
+
+
+@dp.callback_query(lambda c: c.data == "back_main_menu")
+async def back_main_menu(callback: types.CallbackQuery):
+    await callback.message.edit_text('Чем я еще могу помочь?', reply_markup=get_start_keyboard())
 
 
 async def start_bot():
