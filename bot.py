@@ -13,19 +13,27 @@ bot = Bot(token="")
 dp = Dispatcher()
 
 
+def get_start_keyboard():
+    buttons = [
+        [
+            types.InlineKeyboardButton(text="Выписать акции в ручную 🐾", callback_data="hand_data"),
+            types.InlineKeyboardButton(text="Помощь 🙋‍", callback_data="help"),
+            types.InlineKeyboardButton(text="История 👀‍", callback_data="history"),
+        ],
+        [types.InlineKeyboardButton(text="Из файла формата CSV", callback_data="csv_data")]
+    ]
+    keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
+    return keyboard
+
+
 # Хэндлер на команду /start
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
     me = await bot.get_me()
-    builder = InlineKeyboardBuilder()
-    builder.add(types.InlineKeyboardButton(
-        text="Помощь 🙋‍",
-        callback_data="help")
-    )
 
     await message.answer(f"Привет, {message.from_user.first_name}!👋\n"
                          f"Я - {me.first_name} для определения выгодности покупки или продажи той"
-                         f" или иной акции, с указанными параметрами!", reply_markup=builder.as_markup())
+                         f" или иной акции, с указанными параметрами!", reply_markup=get_start_keyboard())
 
 
 @dp.callback_query(lambda c: c.data == "help")
@@ -38,7 +46,6 @@ async def send_random_value(callback: types.CallbackQuery):
 
 async def start_bot():
     await dp.start_polling(bot)
-
 
 
 if __name__ == "__main__":
