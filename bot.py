@@ -1,7 +1,9 @@
 import asyncio
 import logging
+from contextlib import suppress
 
 from aiogram import Bot, Dispatcher, types
+from aiogram import F
 from aiogram.filters.command import Command
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
@@ -54,6 +56,14 @@ async def answer_starting(callback: types.CallbackQuery):
 async def back_main_menu(callback: types.CallbackQuery):
     await callback.message.edit_text('Чем я еще могу помочь?', reply_markup=get_start_keyboard())
 
+
+@dp.message(F.text)
+async def unknown_text_reply(message: types.Message):
+    text = message.text
+    msg = await message.answer("Неизвестная команда.")
+    await asyncio.sleep(3.5)
+    await msg.delete()
+    await message.delete()
 
 async def start_bot():
     await dp.start_polling(bot)
