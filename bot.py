@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from contextlib import suppress
+import sqlite3
 
 from aiogram import Bot, Dispatcher, types
 from aiogram import F
@@ -13,6 +13,9 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token="")
 # Диспетчер
 dp = Dispatcher()
+
+con = sqlite3.Connection('users.sqlite')
+cur = con.cursor()
 
 
 def get_start_keyboard():
@@ -32,6 +35,13 @@ def get_start_keyboard():
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
     me = await bot.get_me()
+    user_id = message.from_user.id
+    query = f"SELECT * FROM users_id WHERE tg_id = {user_id}"
+    res = cur.execute(query).fetchall()
+    if len(res) == 0:
+        add_user_db = f'INSERT INTO users_id(tg_id) VALUES ({user_id})'
+        cur.execute(add_user_db)
+        con.commit()
 
     await message.answer(f"Привет, {message.from_user.first_name}!👋\n"
                          f"Я - {me.first_name} для определения выгодности покупки или продажи той"
@@ -59,11 +69,11 @@ async def back_main_menu(callback: types.CallbackQuery):
 
 @dp.message(F.text)
 async def unknown_text_reply(message: types.Message):
-    text = message.text
     msg = await message.answer("Неизвестная команда.")
     await asyncio.sleep(3.5)
     await msg.delete()
     await message.delete()
+
 
 async def start_bot():
     await dp.start_polling(bot)
