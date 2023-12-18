@@ -31,6 +31,12 @@ def get_start_keyboard():
     return keyboard
 
 
+def generete_back_btn():
+    button = [[types.InlineKeyboardButton(text='Вернуться в главное меню', callback_data='back_main_menu')]]
+    back_main_menu = types.InlineKeyboardMarkup(inline_keyboard=button)
+    return back_main_menu
+
+
 # Хэндлер на команду /start
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
@@ -62,9 +68,16 @@ async def answer_starting(callback: types.CallbackQuery):
                                      reply_markup=builder.as_markup())
 
 
-@dp.callback_query(lambda c: c.data == "back_main_menu")
+@dp.callback_query(lambda c: c.data == 'back_main_menu')
 async def back_main_menu(callback: types.CallbackQuery):
     await callback.message.edit_text('Чем я еще могу помочь?', reply_markup=get_start_keyboard())
+
+
+# Текст, выводящийся после нажатия "импорт из csv
+@dp.callback_query(lambda c: c.data == "csv_data")
+async def get_data_csv(callback: types.CallbackQuery):
+    await callback.message.edit_text('Отправьте csv-фаил со списком акций, которые Вас интересуют.',
+                                     reply_markup=generete_back_btn())
 
 
 @dp.message(F.text)
